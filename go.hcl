@@ -73,3 +73,20 @@ task "install gas" {
   apply = "go get github.com/HewlettPackard/gas"
   depends = ["task.gopath"]
 }
+
+task "add protobuf3 tap" {
+  check = "brew tap | grep duggan/protobuf3"
+  apply = "brew tap duggan/protobuf3"
+}
+
+task "installProtobuf3" {
+  check = "brew list protobuf3"
+  apply = "brew install --HEAD protobuf3 --with-python --with-go"
+  depends = ["task.add protobuf3 tap"]
+ }
+
+task "linkProtobuf3" {
+  interpreter="/bin/bash"
+  check = "echo '{{lookup `task.installProtobuf3.CheckStatus.Stdout`}}' | grep $(readlink $(which protoc))"
+  apply = "brew link protobuf3 --force"
+ }
